@@ -41,8 +41,10 @@ public class ToolchainSettings implements IToolchainSettings {
 	private final ICConfigurationDescription activeConfiguration;
 	private final IProject project;
 	private final IWorkspaceRoot root;
-	private static final String GCC_LANGUAGE_ID = "org.eclipse.cdt.core.gcc";
-	private static final String GPP_LANGUAGE_ID = "org.eclipse.cdt.core.g++";
+	private static final String[] C_EXTENSIONS = { "c" };
+	private static final String[] CPP_EXTENSIONS = {
+			"cpp", "cxx", "cc", "c++", "ccm", "cxxm", "c++m"
+	};
 
 	public ToolchainSettings(IProject project) throws IllegalStateException {
 		languageSettings = new LinkedList<ICLanguageSetting>();
@@ -70,9 +72,13 @@ public class ToolchainSettings implements IToolchainSettings {
 				.getLanguageSettings();
 
 		for (ICLanguageSetting ls : allLanguageSettings) {
-			String id = ls.getLanguageId();
-			if (GCC_LANGUAGE_ID.equals(id) || GPP_LANGUAGE_ID.equals(id)) {
-			    languageSettings.add(ls);
+			String[] exts = ls.getSourceExtensions();
+			for (String ext : exts) {
+			    if (containsIgnoreCase(C_EXTENSIONS, ext)
+			            || containsIgnoreCase(CPP_EXTENSIONS, ext)) {
+			        languageSettings.add(ls);
+			        break;
+			    }
 			}
 		}
 
@@ -236,5 +242,23 @@ public class ToolchainSettings implements IToolchainSettings {
 			}
 		}
 		return symbols;
+	}
+	
+	/**
+	 * Helper function to check if array of strings contain a given string, ignoring case.
+	 * 
+	 * @param values
+	 *            Array of strings to check
+	 * @param value
+	 *            String to check against
+	 * @return whether values contains value (ignoring case)
+	 */
+	private static boolean containsIgnoreCase(String[] values, String value) {
+	    for (String s : values) {
+	        if (s.equalsIgnoreCase(value)) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 }
