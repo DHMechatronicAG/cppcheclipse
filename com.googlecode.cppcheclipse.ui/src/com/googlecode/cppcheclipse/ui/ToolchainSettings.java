@@ -41,9 +41,9 @@ public class ToolchainSettings implements IToolchainSettings {
 	private final ICConfigurationDescription activeConfiguration;
 	private final IProject project;
 	private final IWorkspaceRoot root;
-	private static final String[] C_EXTENSIONS = { "c" };
+	private static final String[] C_EXTENSIONS = { ".c", ".cl" };
 	private static final String[] CPP_EXTENSIONS = {
-			"cpp", "cxx", "cc", "c++", "ccm", "cxxm", "c++m"
+			".cpp", ".cxx", ".cc", ".c++", ".tpp", ".txx", ".ipp", ".ixx"
 	};
 
 	public ToolchainSettings(IProject project) throws IllegalStateException {
