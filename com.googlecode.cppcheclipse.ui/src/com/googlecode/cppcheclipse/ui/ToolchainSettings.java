@@ -3,6 +3,7 @@ package com.googlecode.cppcheclipse.ui;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,11 +37,14 @@ import com.googlecode.cppcheclipse.core.Symbol;
  * 
  */
 public class ToolchainSettings implements IToolchainSettings {
-	private static final String EXTENSION_CPP = "cpp";
 	private final List<ICLanguageSetting> languageSettings;
 	private final ICConfigurationDescription activeConfiguration;
 	private final IProject project;
 	private final IWorkspaceRoot root;
+	private static final String[] C_EXTENSIONS = { ".c", ".cl" };
+	private static final String[] CPP_EXTENSIONS = {
+			".cpp", ".cxx", ".cc", ".c++", ".tpp", ".txx", ".ipp", ".ixx"
+	};
 
 	public ToolchainSettings(IProject project) throws IllegalStateException {
 		languageSettings = new LinkedList<ICLanguageSetting>();
@@ -67,13 +71,14 @@ public class ToolchainSettings implements IToolchainSettings {
 		ICLanguageSetting[] allLanguageSettings = folderDescription
 				.getLanguageSettings();
 
-		// fetch the include settings from the first tool which supports c
-		for (ICLanguageSetting languageSetting : allLanguageSettings) {
-			String extensions[] = languageSetting.getSourceExtensions();
-			for (String extension : extensions) {
-				if (EXTENSION_CPP.equalsIgnoreCase(extension)) { //$NON-NLS-1$
-					languageSettings.add(languageSetting);
-				}
+		for (ICLanguageSetting ls : allLanguageSettings) {
+			String[] exts = ls.getSourceExtensions();
+			for (String ext : exts) {
+			    if (containsIgnoreCase(C_EXTENSIONS, ext)
+			            || containsIgnoreCase(CPP_EXTENSIONS, ext)) {
+			        languageSettings.add(ls);
+			        break;
+			    }
 			}
 		}
 
@@ -161,7 +166,7 @@ public class ToolchainSettings implements IToolchainSettings {
 	 * @return all include folders in a list
 	 */
 	protected Collection<File> getIncludes(boolean onlyUserDefined) {
-		Collection<File> paths = new LinkedList<File>();
+		Collection<File> paths = new LinkedHashSet<File>();
 		IWorkspaceRoot workspaceRoot = project.getWorkspace().getRoot();
 		URI workspaceUri = workspaceRoot.getLocationURI();
 
@@ -237,5 +242,23 @@ public class ToolchainSettings implements IToolchainSettings {
 			}
 		}
 		return symbols;
+	}
+	
+	/**
+	 * Helper function to check if array of strings contain a given string, ignoring case.
+	 * 
+	 * @param values
+	 *            Array of strings to check
+	 * @param value
+	 *            String to check against
+	 * @return whether values contains value (ignoring case)
+	 */
+	private static boolean containsIgnoreCase(String[] values, String value) {
+	    for (String s : values) {
+	        if (s.equalsIgnoreCase(value)) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 }
