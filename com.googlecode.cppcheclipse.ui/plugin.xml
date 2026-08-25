@@ -38,6 +38,7 @@
 		<attribute name="file" />
 		<attribute name="originalLineNumber" />
 		<attribute name="problemId" />
+		<attribute name="stack" />
 	</extension>
     
     <extension point="org.eclipse.ui.commands">
