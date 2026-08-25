@@ -38,7 +38,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	private final static String DELIMITER = ";";
 	private final static String ERROR_FORMAT = "{file}" + DELIMITER + "{line}"
 			+ DELIMITER + "{severity}" + DELIMITER + "{id}" + DELIMITER
-			+ "{message}";
+			+ "{message}" + DELIMITER + "{callstack}";
 	private final static String[] DEFAULT_ARGUMENTS = { "--template="
 			+ ERROR_FORMAT };
 
@@ -322,10 +322,10 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	}
 
 	public static Problem parseResult(String line, IProject project) {
-		String[] lineParts = line.split(DELIMITER, 5);
-		if (lineParts.length < 5) {
+		String[] lineParts = line.split(DELIMITER, 6);
+		if (lineParts.length < 6) {
 			throw new IllegalArgumentException("Not enough tokens in line '"
-					+ line + "'. Expected 5 tokens but got " + lineParts.length);
+					+ line + "'. Expected 6 tokens but got " + lineParts.length);
 		}
 
 		/**
@@ -352,8 +352,9 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			String severity = lineParts[2];
 			String id = lineParts[3];
 			String message = lineParts[4];
+			String stack = lineParts[5];
 			return new Problem(id, message, severity, filename, project,
-					lineNumber);
+					lineNumber, stack);
 
 		} catch (NumberFormatException e2) {
 			throw new IllegalArgumentException(

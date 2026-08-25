@@ -23,6 +23,7 @@ public class ProblemReporter implements IProblemReporter {
 	public static final String ATTRIBUTE_ID = "problemId"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_ORIGINAL_LINE_NUMBER = "originalLineNumber"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_FILE = "file"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_STACK = "stack"; //$NON-NLS-1$
 
 	public ProblemReporter() {
 	}
@@ -53,13 +54,13 @@ public class ProblemReporter implements IProblemReporter {
 			// for each resource
 			reportProblem(resource, completeMessage, problem
 					.getSeverity().intValue(), lineNumber, problem.getId(),
-					problem.getFile(), problem.getLineNumber());
+					problem.getFile(), problem.getLineNumber(), problem.getStack());
 		}
 	}
 
 	private void reportProblem(IResource resource, String message,
 			int severity, int lineNumber, String id, File file,
-			int originalLineNumber) throws CoreException {
+			int originalLineNumber, String stack) throws CoreException {
 		// TODO: open external file, see
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=151005 on how to
 		// generate markers for external files
@@ -81,6 +82,13 @@ public class ProblemReporter implements IProblemReporter {
 				}
 			}
 		}
+		
+		// Only display stack if it contains multiple locations
+		String stack_display = "";
+		int locationCount = (stack.length() - stack.replace("->", "").length())/2;
+		if (locationCount > 0) {
+			stack_display = stack;
+		}
 
 		// see
 		// http://wiki.eclipse.org/FAQ_Why_don%27t_my_markers_appear_in_the_editor%27s_vertical_ruler%3F
@@ -88,13 +96,14 @@ public class ProblemReporter implements IProblemReporter {
 		if (lineNumber != 0) {
 			MarkerUtilities.setLineNumber(attributes, lineNumber);
 		}
-		MarkerUtilities.setMessage(attributes, message);
+		MarkerUtilities.setMessage(attributes, message + " " + stack_display);
 		attributes.put(IMarker.SEVERITY, severity);
 		// the following attributes are only used for the quick fixes
 		attributes.put(ATTRIBUTE_ID, id);
 		if (file != null) {
 			attributes.put(ATTRIBUTE_FILE, file.toString());
 		}
+		attributes.put(ATTRIBUTE_STACK, stack_display);
 		attributes.put(ATTRIBUTE_ORIGINAL_LINE_NUMBER, originalLineNumber);
 		MarkerUtilities.createMarker(resource, attributes, CHECKER_MARKER_TYPE);
 	}

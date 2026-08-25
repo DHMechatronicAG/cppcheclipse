@@ -18,7 +18,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 public class Problem implements Cloneable {
 	private static final String DELIMITER = ";";
 
-	private final String id, message, category;
+	private final String id, message, category, stack;
 	private final int lineNumber;
 	private final File file; // either absolute or relative filename (to
 								// project), maybe null for problem profiles or
@@ -33,7 +33,7 @@ public class Problem implements Cloneable {
 	 * Constructor is called for default problems (in problem profiles).
 	 */
 	public Problem(String id, String message, String category) {
-		this(id, message, category, null, null, -1);
+		this(id, message, category, null, null, -1, "");
 	}
 
 	/**
@@ -49,13 +49,14 @@ public class Problem implements Cloneable {
 	 *            (might be 0 for non line-specific problems)
 	 */
 	public Problem(String id, String message, String category, File file,
-			IProject project, int line) {
+			IProject project, int line, String stack) {
 		this.id = id;
 		this.message = message;
 		this.category = category;
 		this.lineNumber = line;
 		this.file = file;
 		this.project = project;
+		this.stack = stack;
 		setToDefault();
 	}
 
@@ -75,6 +76,10 @@ public class Problem implements Cloneable {
 
 	public String getCategory() {
 		return category;
+	}
+	
+	public String getStack() {
+		return stack;
 	}
 
 	public ProblemSeverity getSeverity() {
