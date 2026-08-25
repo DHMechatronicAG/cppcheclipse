@@ -84,10 +84,10 @@ public class ProblemReporter implements IProblemReporter {
 		}
 		
 		// Only display stack if it contains multiple locations
-		String stack_display = "";
+		String message_display = message;
 		int locationCount = (stack.length() - stack.replace("->", "").length())/2;
 		if (locationCount > 0) {
-			stack_display = stack;
+			message_display = message + " " + stack;
 		}
 
 		// see
@@ -96,14 +96,14 @@ public class ProblemReporter implements IProblemReporter {
 		if (lineNumber != 0) {
 			MarkerUtilities.setLineNumber(attributes, lineNumber);
 		}
-		MarkerUtilities.setMessage(attributes, message + " " + stack_display);
+		MarkerUtilities.setMessage(attributes, message_display);
 		attributes.put(IMarker.SEVERITY, severity);
 		// the following attributes are only used for the quick fixes
 		attributes.put(ATTRIBUTE_ID, id);
 		if (file != null) {
 			attributes.put(ATTRIBUTE_FILE, file.toString());
 		}
-		attributes.put(ATTRIBUTE_STACK, stack_display);
+		attributes.put(ATTRIBUTE_STACK, stack);
 		attributes.put(ATTRIBUTE_ORIGINAL_LINE_NUMBER, originalLineNumber);
 		MarkerUtilities.createMarker(resource, attributes, CHECKER_MARKER_TYPE);
 	}
