@@ -26,7 +26,7 @@ If you have set up everything as recommended above, all you need to do to test l
 The run config should be an Eclipse Application launch that is set to 'run a product'.
 Under the plug-ins tab you should set it to launch with 'All workspace and enabled target Plug-ins', and click 'validate plug-ins' before running.
 
-With the run config create you should be able to simply press 'run' and test out the extension. Note that you will need to set the path to your cppcheck executable in the test environment for the analysis to be able to run.
+With the run config create you should be able to simply press 'run' and test out the plug-in. Note that you will need to set the path to your cppcheck executable in the test environment for the analysis to be able to run.
 
 ## release process
 
